@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
         self.password_hash = generate_password_hash(password)
 
     def validate_password(self, password):
-        return check_password_hash(self.password_hash,password)
+        return check_password_hash(self.password_hash, password)
 
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -96,9 +96,9 @@ def admin(username,password):
     if user is not None:
         click.echo('Updating user...')
         user.username = username
-        user.password_hash = User.set_password(password)
+        user.set_password(password)
     else:
-        click.echo('Createing user...')    
+        click.echo('Creating user...')    
         user = User(username=username, name='Admin')
         user.set_password(password)
         db.session.add(user)
@@ -122,6 +122,7 @@ def login():
             return redirect(url_for('login'))
         
         user = User.query.first()
+        print(user.name, user.username, user.password_hash)
         if username == user.username and user.validate_password(password):
             login_user(user)
             flash('Login success.')
@@ -177,7 +178,7 @@ def initdb(drop):
 
 @app.cli.command()
 def forge():
-    name = 'Fly Ye'
+    # name = 'Fly Ye'
     movies = [
         {'title': 'My Neighbor Totoro2', 'year': '1988'},
         {'title': 'Dead Poets Society', 'year': '1989'},
@@ -191,8 +192,8 @@ def forge():
         {'title': 'The Pork of Music', 'year': '2012'},
     ]
 
-    user = User(name=name)
-    db.session.add(user)
+    # user = User(name=name)
+    # db.session.add(user)
     for m in movies:
         movie = Movie(title=m['title'], year=m['year'])
         db.session.add(movie)
